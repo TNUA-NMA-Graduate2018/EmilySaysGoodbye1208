@@ -1,4 +1,3 @@
-
 /*
   HMC5883L Triple Axis Digital Compass. Output for HMC5883L_processing.pde
   Read more: http://www.jarzebski.pl/arduino/czujniki-i-sensory/3-osiowy-magnetometr-hmc5883l.html
@@ -118,3 +117,4 @@ int detectDegree(){
 
 
 }
+
