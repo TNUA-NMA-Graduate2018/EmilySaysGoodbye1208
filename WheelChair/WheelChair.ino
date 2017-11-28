@@ -1,24 +1,3 @@
-const int slider1 = A0;
-  int sli1 = 0;
-  int value1; 
-
-void setup() {
-  pinMode(slider1, INPUT);
-  Serial.begin(9600);
-}
-
-void loop() {
-  int s;
-  s = slider();
-}
-
-int slider() {
-  sli1 = analogRead(slider1);
-  value1 = int(map(sli1, 0, 1024, -100, 100));
-
-  return value1 ;
-}
-
 /*
   HMC5883L Triple Axis Digital Compass. Output for HMC5883L_processing.pde
   Read more: http://www.jarzebski.pl/arduino/czujniki-i-sensory/3-osiowy-magnetometr-hmc5883l.html
@@ -29,17 +8,18 @@ int slider() {
 
 #include <Wire.h>
 #include <HMC5883L.h>
+const int slider1 = A0;
+int sli1 = 0;
+int value1; 
 
 HMC5883L compass;
-
 int previousDegree;
 int returnDegree;
 
-void setup()
-{
-  Serial.begin(9600);
 
-  // Initialize HMC5883L
+void setup() {
+  pinMode(slider1, INPUT);
+  Serial.begin(9600);
   while (!compass.begin())
   {
     delay(500);
@@ -61,10 +41,20 @@ void setup()
   compass.setOffset(0, 0); 
 }
 
-void loop()
-{
+void loop() {
+  int s;
+  s = slider();
   returnDegree = detectDegree();
 }
+
+int slider() {
+  sli1 = analogRead(slider1);
+  value1 = int(map(sli1, 0, 1024, -100, 100));
+
+  return value1 ;
+}
+
+
 
 int detectDegree(){
 
