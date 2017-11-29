@@ -7,19 +7,28 @@
 */
 
 #include <Wire.h>
-#include <HMC5883L.h>
-const int slider1 = A0;
-int sli1 = 0;
-int value1; 
+#include <HMC5883L.h> 
 
 HMC5883L compass;
 int previousDegree;
 int returnDegree;
 
+const int motorIn1 = 11;
+const int motorIn2 = 10;
+const int slider1 = A0;
+
+int sli1 = 0;
+int value1;
+
 
 void setup() {
-  pinMode(slider1, INPUT);
   Serial.begin(9600);
+  
+  pinMode(slider1, INPUT);
+  pinMode(motorIn1, OUTPUT);
+  pinMode(motorIn2, OUTPUT);
+  pinMode(8, OUTPUT);
+  
   while (!compass.begin())
   {
     delay(500);
@@ -42,19 +51,9 @@ void setup() {
 }
 
 void loop() {
-  int s;
-  s = slider();
   returnDegree = detectDegree();
+  slidercontrol();
 }
-
-int slider() {
-  sli1 = analogRead(slider1);
-  value1 = int(map(sli1, 0, 1024, -100, 100));
-
-  return value1 ;
-}
-
-
 
 int detectDegree(){
 
@@ -121,7 +120,7 @@ int detectDegree(){
 //  Serial.print(":");
   Serial.print(smoothHeadingDegrees);  
   
-  return smoothHeadingDegree;
+  return smoothHeadingDegrees;
   // One loop: ~5ms @ 115200 serial.
   // We need delay ~28ms for allow data rate 30Hz (~33ms)
   delay(30);
@@ -130,24 +129,8 @@ int detectDegree(){
 }
 
 
-const int motorIn1 = 11;
-const int motorIn2 = 10;
-const int slider1 = A0;
 
-int sli1 = 0;
-int value1;
-
-void setup()
-{
-  Serial.begin(9600);
-  pinMode(slider1, INPUT);
-  pinMode(motorIn1, OUTPUT);
-  pinMode(motorIn2, OUTPUT);
-  pinMode(8, OUTPUT);
-}
-
-void loop()
-{
+void slidercontrol(){
   int slidervalue = slider();
 
   if (slidervalue > 30) {
@@ -166,9 +149,7 @@ void loop()
     digitalWrite(8, HIGH);
     motorstop();
   }
-
 }
-
 
 int slider() {
   sli1 = analogRead(slider1);
