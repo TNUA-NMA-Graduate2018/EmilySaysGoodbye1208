@@ -62,7 +62,7 @@ void loop() {
 
   // Read the first line of the request
   String req = client.readStringUntil('\r');
-  Serial.println(req);
+  //Serial.println(req);
   client.flush();
 
   // Match the request
@@ -81,12 +81,10 @@ void loop() {
   Serial.println(val);
 
   // Set GPIO2 according to the request
-  digitalWrite(D7, HIGH);
-  delay(val + 50);
-  digitalWrite(D7, LOW);
+  digitalWrite(D7, val);
+  //delay(val + 50);
 
   client.flush();
-
   // Prepare the response
   String s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE HTML>\r\n<html>\r\nGPIO is now ";
   s += (val) ? "high" : "low";
