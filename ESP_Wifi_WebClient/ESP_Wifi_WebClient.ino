@@ -44,25 +44,24 @@ void loop() {
   Serial.println(WiFi.localIP());
   // Use WiFiClient class to create TCP connections
   WiFiClient client;
-
   if (!client.connect(host, port)) {
     Serial.println("connection failed");
     Serial.println("wait 5 sec...");
     delay(5000);
     return;
   }
-
+  String req = client.readStringUntil('\r');
+  int val;
+  val = int(req[0]);
+  Serial.println(val);
+  digitalWrite(D7, val);
   // This will send the request to the server
 
-  delay(200);
-  char n = int(map(analogRead(A0),0,1024,0,255));
-  
+  char n = int(map(analogRead(A0), 0, 1024, 0, 255));
   client.print(n);
-  //read back one line from server
-  String line = client.readStringUntil('\r');
-  client.println(line);
+  client.flush();
 
-  Serial.println("closing connection");
-  client.stop();
-  //Serial.println("wait 5 sec...");
+  delay(300);
+  
+  //client.stop();
 }
