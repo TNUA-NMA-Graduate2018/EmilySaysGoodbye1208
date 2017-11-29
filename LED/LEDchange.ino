@@ -7,8 +7,10 @@ int sensorValue = 0;
 int value = 0;
 int valueold = 0;
 
-setup(){}
-loop(){}
+void setup(){
+}
+void loop(){
+}
 
 
 void   LedChangeOhyeah (int num) {
@@ -95,4 +97,4 @@ void   LedChangeOhyeah (int num) {
         return strip.Color(0, WheelPos * 3, 127 - WheelPos * 3);
       }
     }
-}
+
