@@ -20,7 +20,7 @@ int sli2 = 0;
 int value1;
 int value2;
 const int readSlider1 = A0;
-//const int readSlider2 = A1;
+const int readSlider2 = A1;
 
 void setup() {
   Serial.begin(9600);
