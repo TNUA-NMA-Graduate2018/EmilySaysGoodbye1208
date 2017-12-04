@@ -1,30 +1,24 @@
-/*
+ /*
   HMC5883L Triple Axis Digital Compass. Output for HMC5883L_processing.pde
   Read more: http://www.jarzebski.pl/arduino/czujniki-i-sensory/3-osiowy-magnetometr-hmc5883l.html
   GIT: https://github.com/jarzebski/Arduino-HMC5883L
   Web: http://www.jarzebski.pl
   (c) 2014 by Korneliusz Jarzebski
 */
-#include <ESP8266WiFi.h>
-#include<Arduino.h>
+
 
 #include <Wire.h>
-#include <HMC5883L.h> 
+#include <HMC5883L.h>
 
 HMC5883L compass;
 int previousDegree;
-int returnDegree;
-
-int sli1 = 0;
-int sli2 = 0;
-int value1;
-int value2;
 const int readSlider1 = A0;
 const int readSlider2 = A1;
+boolean modeChange = 0; //0 =selfs  1=other
 
 void setup() {
   Serial.begin(9600);
-  
+
   pinMode(readSlider1, INPUT);
   pinMode(readSlider2, INPUT);
   pinMode(10, OUTPUT);
@@ -33,7 +27,7 @@ void setup() {
   pinMode(5, OUTPUT);
   pinMode(8, OUTPUT);
   pinMode(7, OUTPUT);//繼電器
-  
+
   while (!compass.begin())
   {
     delay(500);
@@ -52,15 +46,29 @@ void setup() {
   compass.setSamples(HMC5883L_SAMPLES_8);
 
   // Set calibration offset. See HMC5883L_calibration.ino
-  compass.setOffset(0, 0); 
+  compass.setOffset(0, 0);
 }
 
 void loop() {
-  returnDegree = detectDegree();
-  slidercontrol();
+
+  int leftFromOther;
+  int rightFromOther;
+  int leftToOther;
+  int RightToOther;
+  
+  int returnDegree = detectDegree();//頭部方位數值
+
+  if (!modeChange) {
+    sliderControlSelf();
+  }
+  else{
+    leftToOther = slider(readSlider1);//leftToOther 是要送出去給對方的左邊輪子
+    RightToOther = slider(readSlider2);
+    sliderControlByOther(leftFromOther, rightFromOther);//接收對方左右輪數值，控制自己馬達
+  }
 }
 
-int detectDegree(){
+int detectDegree() {
 
   long x = micros();
   Vector norm = compass.readNormalize();
@@ -81,23 +89,22 @@ int detectDegree(){
   {
     heading += 2 * PI;
   }
- 
+
   if (heading > 2 * PI)
   {
     heading -= 2 * PI;
   }
 
   // Convert to degrees
-  float headingDegrees = heading * 180/M_PI; 
+  float headingDegrees = heading * 180 / M_PI;
 
   // Fix HMC5883L issue with angles
   float fixedHeadingDegrees;
- 
+
   if (headingDegrees >= 1 && headingDegrees < 240)
   {
     fixedHeadingDegrees = map(headingDegrees, 0, 239, 0, 179);
-  } else
-  if (headingDegrees >= 240)
+  } else if (headingDegrees >= 240)
   {
     fixedHeadingDegrees = map(headingDegrees, 240, 360, 180, 360);
   }
@@ -109,7 +116,7 @@ int detectDegree(){
   {
     smoothHeadingDegrees = previousDegree;
   }
-  
+
   previousDegree = smoothHeadingDegrees;
 
 
@@ -123,7 +130,7 @@ int detectDegree(){
   Serial.print(":");
   Serial.print(fixedHeadingDegrees);
   Serial.print(":");
-  Serial.print(smoothHeadingDegrees);  
+  Serial.print(smoothHeadingDegrees);
   Serial.println();
   return smoothHeadingDegrees;
   // One loop: ~5ms @ 115200 serial.
@@ -133,65 +140,100 @@ int detectDegree(){
 
 }
 
+void sliderControlByOther(int leftFromOther, int rightFromOther) {
+  int sliderValue1 = leftFromOther;
+  int sliderValue2 = rightFromOther;
 
-
-void slidercontrol(){
-  int slidervalue1 = slider(readSlider1);
-  int slidervalue2 = slider(readSlider2);
-
-  if (slidervalue1 > 50) {
+  if (sliderValue1 > 50) {
     digitalWrite(8, LOW);
-    forward(abs(slidervalue1),11,10);
+    forward(abs(sliderValue1), 11, 10);
     delay(200);
   }
 
-  else if (slidervalue1 < 10) {
+  else if (sliderValue1 < 10) {
     digitalWrite(8, LOW);
-    backward(abs(slidervalue1),11,10);
-     delay(200);
+    backward(abs(sliderValue1), 11, 10);
+    delay(200);
   }
 
   else {
     digitalWrite(8, HIGH);
-    motorstop(11,10);
+    motorstop(11, 10);
   }
-  
-  if (slidervalue2 > 50) {
+
+  if (sliderValue2 > 50) {
     digitalWrite(7, LOW);
-    forward(abs(slidervalue2),6,5);
+    forward(abs(sliderValue2), 6, 5);
     delay(200);
   }
-  else if (slidervalue2 < 10) {
+  else if (sliderValue2 < 10) {
     digitalWrite(7, LOW);
-    backward(abs(slidervalue2),6,5);
-     delay(200);
+    backward(abs(sliderValue2), 6, 5);
+    delay(200);
   }
   else {
     digitalWrite(7, HIGH);
-    motorstop(6,5);
+    motorstop(6, 5);
+  }
+}
+
+void sliderControlSelf() {
+  int sliderValue1 = slider(readSlider1);
+  int sliderValue2 = slider(readSlider2);
+
+  if (sliderValue1 > 50) {
+    digitalWrite(8, LOW);
+    forward(abs(sliderValue1), 11, 10);
+    delay(200);
+  }
+
+  else if (sliderValue1 < 10) {
+    digitalWrite(8, LOW);
+    backward(abs(sliderValue1), 11, 10);
+    delay(200);
+  }
+
+  else {
+    digitalWrite(8, HIGH);
+    motorstop(11, 10);
+  }
+
+  if (sliderValue2 > 50) {
+    digitalWrite(7, LOW);
+    forward(abs(sliderValue2), 6, 5);
+    delay(200);
+  }
+  else if (sliderValue2 < 10) {
+    digitalWrite(7, LOW);
+    backward(abs(sliderValue2), 6, 5);
+    delay(200);
+  }
+  else {
+    digitalWrite(7, HIGH);
+    motorstop(6, 5);
   }
 }
 
 int slider(int slider) {
-  sli1 = analogRead(slider);
-  value1 = int(map(sli1, 0, 1024, -255, 255));
+  int sli = analogRead(slider);
+  int value = int(map(sli, 0, 1024, -255, 255));
 
-  return value1 ;
+  return value;
 }
 
-void motorstop(const int x,const int y)
+void motorstop(const int x, const int y)
 {
   digitalWrite(x, LOW);
   digitalWrite(y, LOW);
 }
 
-void forward(int gospeed,const int x,const int y)
+void forward(int gospeed, const int x, const int y)
 {
   digitalWrite(x, gospeed);
   digitalWrite(y, 0);
 }
 
-void backward(int backspeed,const int x,const int y)
+void backward(int backspeed, const int x, const int y)
 {
   digitalWrite(x, 0);
   digitalWrite(y, backspeed);
