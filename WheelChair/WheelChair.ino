@@ -5,6 +5,8 @@
   Web: http://www.jarzebski.pl
   (c) 2014 by Korneliusz Jarzebski
 */
+#include <ESP8266WiFi.h>
+#include<Arduino.h>
 
 #include <Wire.h>
 #include <HMC5883L.h> 
@@ -13,21 +15,24 @@ HMC5883L compass;
 int previousDegree;
 int returnDegree;
 
-const int motorIn1 = 11;
-const int motorIn2 = 10;
-const int slider1 = A0;
-
 int sli1 = 0;
+int sli2 = 0;
 int value1;
-
+int value2;
+const int readSlider1 = A0;
+//const int readSlider2 = A1;
 
 void setup() {
   Serial.begin(9600);
   
-  pinMode(slider1, INPUT);
-  pinMode(motorIn1, OUTPUT);
-  pinMode(motorIn2, OUTPUT);
+  pinMode(readSlider1, INPUT);
+  pinMode(readSlider2, INPUT);
+  pinMode(10, OUTPUT);
+  pinMode(11, OUTPUT);
+  pinMode(6, OUTPUT);
+  pinMode(5, OUTPUT);
   pinMode(8, OUTPUT);
+  pinMode(7, OUTPUT);//繼電器
   
   while (!compass.begin())
   {
@@ -107,19 +112,19 @@ int detectDegree(){
   
   previousDegree = smoothHeadingDegrees;
 
-  // Output
-//  Serial.print(norm.XAxis);
-//  Serial.print(":");
-//  Serial.print(norm.YAxis);
-//  Serial.print(":");
-//  Serial.print(norm.ZAxis);
-//  Serial.print(":");
-//  Serial.print(headingDegrees);
-//  Serial.print(":");
-//  Serial.print(fixedHeadingDegrees);
-//  Serial.print(":");
+
+  Serial.print(norm.XAxis);
+  Serial.print(":");
+  Serial.print(norm.YAxis);
+  Serial.print(":");
+  Serial.print(norm.ZAxis);
+  Serial.print(":");
+  Serial.print(headingDegrees);
+  Serial.print(":");
+  Serial.print(fixedHeadingDegrees);
+  Serial.print(":");
   Serial.print(smoothHeadingDegrees);  
-  
+  Serial.println();
   return smoothHeadingDegrees;
   // One loop: ~5ms @ 115200 serial.
   // We need delay ~28ms for allow data rate 30Hz (~33ms)
@@ -131,49 +136,63 @@ int detectDegree(){
 
 
 void slidercontrol(){
-  int slidervalue = slider();
+  int slidervalue1 = slider(readSlider1);
+  int slidervalue2 = slider(readSlider2);
 
-  if (slidervalue > 30) {
+  if (slidervalue1 > 50) {
     digitalWrite(8, LOW);
-    forward(abs(slidervalue));
+    forward(abs(slidervalue1),11,10);
     delay(200);
   }
 
-  else if (slidervalue < -30) {
+  else if (slidervalue1 < 10) {
     digitalWrite(8, LOW);
-    backward(abs(slidervalue));
+    backward(abs(slidervalue1),11,10);
      delay(200);
   }
 
   else {
     digitalWrite(8, HIGH);
-    motorstop();
+    motorstop(11,10);
+  }
+  
+  if (slidervalue2 > 50) {
+    digitalWrite(7, LOW);
+    forward(abs(slidervalue2),6,5);
+    delay(200);
+  }
+  else if (slidervalue2 < 10) {
+    digitalWrite(7, LOW);
+    backward(abs(slidervalue2),6,5);
+     delay(200);
+  }
+  else {
+    digitalWrite(7, HIGH);
+    motorstop(6,5);
   }
 }
 
-int slider() {
-  sli1 = analogRead(slider1);
+int slider(int slider) {
+  sli1 = analogRead(slider);
   value1 = int(map(sli1, 0, 1024, -255, 255));
 
   return value1 ;
 }
 
-void motorstop()
+void motorstop(const int x,const int y)
 {
-  digitalWrite(motorIn1, LOW);
-  digitalWrite(motorIn2, LOW);
+  digitalWrite(x, LOW);
+  digitalWrite(y, LOW);
 }
 
-void forward(int gospeed)
+void forward(int gospeed,const int x,const int y)
 {
-  digitalWrite(motorIn1, gospeed);
-  digitalWrite(motorIn2, 0);
+  digitalWrite(x, gospeed);
+  digitalWrite(y, 0);
 }
 
-void backward(int backspeed)
+void backward(int backspeed,const int x,const int y)
 {
-  digitalWrite(motorIn1, 0);
-  digitalWrite(motorIn2, backspeed);
+  digitalWrite(x, 0);
+  digitalWrite(y, backspeed);
 }
-
-
