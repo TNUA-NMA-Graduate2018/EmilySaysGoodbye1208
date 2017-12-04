@@ -8,6 +8,7 @@ Adafruit_NeoPixel stripB = Adafruit_NeoPixel(pixelNumber, D7, NEO_GRB + NEO_KHZ8
 int value = 1;
 int valueold = 0;
 
+//Hello I changed
 
 WiFiServer server(80);
 

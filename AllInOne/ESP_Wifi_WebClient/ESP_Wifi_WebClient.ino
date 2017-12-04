@@ -14,8 +14,8 @@ ESP8266WiFiMulti WiFiMulti;
 
 HMC5883L compass;
 int previousDegree;
-const int readSlider1 = 0;
-const int readSlider2 = 1;
+const int readSlider1 = A0;
+const int readSlider2 = A1;
 boolean modeChange = 0; //0 =selfs  1=other
 
 // ************************可變電阻值***********************
@@ -23,10 +23,14 @@ const int topValue = 50;
 const int lowValue = 10;
 // ************************可變電阻值***********************
 
+WiFiClient client;
+
+
 void setup() {
   Serial.begin(115200);
   delay(10);
 
+  client.setNoDelay(1);
   // We start by connecting to a WiFi network
   WiFiMulti.addAP("dlink-DC88", "ydeok89348");
   //const char* ssid     = "dlink-DC88";
@@ -77,11 +81,9 @@ void setup() {
   compass.setOffset(0, 0);
 
 }
-
-
 void loop() {
 
-  internetCheck();
+
   int leftFromOther;
   int rightFromOther;
   int leftToOther;
@@ -97,6 +99,7 @@ void loop() {
     RightToOther = slider(readSlider2);
     sliderControlByOther(leftFromOther, rightFromOther);//接收對方左右輪數值，控制自己馬達
   }
+  internetCheck();
 }
 void internetCheck() {
   const uint16_t port = 80;
@@ -107,9 +110,7 @@ void internetCheck() {
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
   // Use WiFiClient class to create TCP connections
-  WiFiClient client;
-  client.setNoDelay(1);
-  
+
   if (!client.connect(host, port)) {
     Serial.println("connection failed");
     Serial.println("wait 5 sec...");
@@ -128,7 +129,6 @@ void internetCheck() {
 
   client.print(n1);
   client.print(n2);
-
   client.flush();
 
   delay(50);
@@ -213,11 +213,13 @@ void sliderControlByOther(int leftFromOther, int rightFromOther) {
   if (sliderValue1 > topValue) {
     digitalWrite(8, LOW);
     forward(abs(sliderValue1), 11, 10);
+    delay(50);
   }
 
   else if (sliderValue1 < lowValue) {
     digitalWrite(8, LOW);
     backward(abs(sliderValue1), 11, 10);
+    delay(50);
   }
 
   else {
@@ -228,10 +230,12 @@ void sliderControlByOther(int leftFromOther, int rightFromOther) {
   if (sliderValue2 > topValue) {
     digitalWrite(7, LOW);
     forward(abs(sliderValue2), 6, 5);
+    delay(50);
   }
   else if (sliderValue2 < lowValue) {
     digitalWrite(7, LOW);
     backward(abs(sliderValue2), 6, 5);
+    delay(50);
   }
   else {
     digitalWrite(7, HIGH);
@@ -245,13 +249,13 @@ void sliderControlSelf() {
   if (sliderValue1 > topValue) {
     digitalWrite(8, LOW);
     forward(abs(sliderValue1), 11, 10);
-    delay(200);
+    delay(50);
   }
 
   else if (sliderValue1 < lowValue) {
     digitalWrite(8, LOW);
     backward(abs(sliderValue1), 11, 10);
-    delay(200);
+    delay(50);
   }
 
   else {
@@ -262,12 +266,12 @@ void sliderControlSelf() {
   if (sliderValue2 > topValue) {
     digitalWrite(7, LOW);
     forward(abs(sliderValue2), 6, 5);
-    delay(200);
+    delay(50);
   }
   else if (sliderValue2 < lowValue) {
     digitalWrite(7, LOW);
     backward(abs(sliderValue2), 6, 5);
-    delay(200);
+    delay(50);
   }
   else {
     digitalWrite(7, HIGH);
