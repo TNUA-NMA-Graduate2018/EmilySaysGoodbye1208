@@ -10,19 +10,18 @@
 #include <Wire.h>
 #include <HMC5883L.h>
 
-
 ESP8266WiFiMulti WiFiMulti;
 
 HMC5883L compass;
 int previousDegree;
-int returnDegree;
+const int readSlider1 = 0;
+const int readSlider2 = 1;
+boolean modeChange = 0; //0 =selfs  1=other
 
-int sli1 = 0;
-int sli2 = 0;
-int value1;
-int value2;
-const int readSlider1 = A0;
-const int readSlider2 = A1;
+// ************************可變電阻值***********************
+const int topValue = 50;
+const int lowValue = 10;
+// ************************可變電阻值***********************
 
 void setup() {
   Serial.begin(115200);
@@ -47,7 +46,7 @@ void setup() {
   Serial.println(WiFi.localIP());
 
   delay(500);
-	
+
   pinMode(readSlider1, INPUT);
   pinMode(readSlider2, INPUT);
   pinMode(10, OUTPUT);
@@ -81,14 +80,26 @@ void setup() {
 
 
 void loop() {
-	
-	internetCheck();
-	returnDegree = detectDegree();
-	slidercontrol();
 
+  internetCheck();
+  int leftFromOther;
+  int rightFromOther;
+  int leftToOther;
+  int RightToOther;
+
+  int returnDegree = detectDegree();//頭部方位數值
+
+  if (!modeChange) {
+    sliderControlSelf();
+  }
+  else {
+    leftToOther = slider(readSlider1);//leftToOther 是要送出去給對方的左邊輪子
+    RightToOther = slider(readSlider2);
+    sliderControlByOther(leftFromOther, rightFromOther);//接收對方左右輪數值，控制自己馬達
+  }
 }
-void internetCheck(){
-const uint16_t port = 80;
+void internetCheck() {
+  const uint16_t port = 80;
   const char * host = "192.168.0.101"; // ip or dns
 
   Serial.print("connecting to ");
@@ -97,6 +108,8 @@ const uint16_t port = 80;
   Serial.println(WiFi.localIP());
   // Use WiFiClient class to create TCP connections
   WiFiClient client;
+  client.setNoDelay(1);
+  
   if (!client.connect(host, port)) {
     Serial.println("connection failed");
     Serial.println("wait 5 sec...");
@@ -107,18 +120,22 @@ const uint16_t port = 80;
   int val;
   val = int(req[0]);
   Serial.println(val);
-  digitalWrite(D7, val);
+  digitalWrite(7, val);
   // This will send the request to the server
 
-  char n = int(map(analogRead(A0), 0, 1024, 0, 255));
-  client.print(n);
+  char n1 = leftToOther;
+  char n2 = RightToOther;
+
+  client.print(n1);
+  client.print(n2);
+
   client.flush();
 
-  delay(300);
+  delay(50);
 
   //client.stop();
 }
-int detectDegree(){
+int detectDegree() {
 
   long x = micros();
   Vector norm = compass.readNormalize();
@@ -146,7 +163,7 @@ int detectDegree(){
   }
 
   // Convert to degrees
-  float headingDegrees = heading * 180/M_PI;
+  float headingDegrees = heading * 180 / M_PI;
 
   // Fix HMC5883L issue with angles
   float fixedHeadingDegrees;
@@ -154,8 +171,7 @@ int detectDegree(){
   if (headingDegrees >= 1 && headingDegrees < 240)
   {
     fixedHeadingDegrees = map(headingDegrees, 0, 239, 0, 179);
-  } else
-  if (headingDegrees >= 240)
+  } else if (headingDegrees >= 240)
   {
     fixedHeadingDegrees = map(headingDegrees, 240, 360, 180, 360);
   }
@@ -175,7 +191,7 @@ int detectDegree(){
   Serial.print(":");
   Serial.print(norm.YAxis);
   Serial.print(":");
- Serial.print(norm.ZAxis);
+  Serial.print(norm.ZAxis);
   Serial.print(":");
   Serial.print(headingDegrees);
   Serial.print(":");
@@ -190,66 +206,95 @@ int detectDegree(){
 }
 
 
+void sliderControlByOther(int leftFromOther, int rightFromOther) {
+  int sliderValue1 = (int)map(leftFromOther, 0, 255, -255, 255);
+  int sliderValue2 = (int)map(rightFromOther, 0, 255, -255, 255);
 
-void slidercontrol(){
-  int slidervalue1 = slider(readSlider1);
-  int slidervalue2 = slider(readSlider2);
-
-  if (slidervalue1 > 50) {
+  if (sliderValue1 > topValue) {
     digitalWrite(8, LOW);
-    forward(abs(slidervalue1),11,10);
-    delay(200);
+    forward(abs(sliderValue1), 11, 10);
   }
 
-  else if (slidervalue1 < 10) {
+  else if (sliderValue1 < lowValue) {
     digitalWrite(8, LOW);
-    backward(abs(slidervalue1),11,10);
-     delay(200);
+    backward(abs(sliderValue1), 11, 10);
   }
 
   else {
     digitalWrite(8, HIGH);
-    motorstop(11,10);
+    motorstop(11, 10);
   }
 
-  if (slidervalue2 > 50) {
+  if (sliderValue2 > topValue) {
     digitalWrite(7, LOW);
-    forward(abs(slidervalue2),6,5);
-    delay(200);
+    forward(abs(sliderValue2), 6, 5);
   }
-  else if (slidervalue2 < 10) {
+  else if (sliderValue2 < lowValue) {
     digitalWrite(7, LOW);
-    backward(abs(slidervalue2),6,5);
-     delay(200);
+    backward(abs(sliderValue2), 6, 5);
   }
   else {
     digitalWrite(7, HIGH);
-    motorstop(6,5);
+    motorstop(6, 5);
+  }
+}
+void sliderControlSelf() {
+  int sliderValue1 = (int)map(slider(readSlider1), 0, 255, -255, 255);
+  int sliderValue2 = (int)map(slider(readSlider2), 0, 255, -255, 255);
+
+  if (sliderValue1 > topValue) {
+    digitalWrite(8, LOW);
+    forward(abs(sliderValue1), 11, 10);
+    delay(200);
+  }
+
+  else if (sliderValue1 < lowValue) {
+    digitalWrite(8, LOW);
+    backward(abs(sliderValue1), 11, 10);
+    delay(200);
+  }
+
+  else {
+    digitalWrite(8, HIGH);
+    motorstop(11, 10);
+  }
+
+  if (sliderValue2 > topValue) {
+    digitalWrite(7, LOW);
+    forward(abs(sliderValue2), 6, 5);
+    delay(200);
+  }
+  else if (sliderValue2 < lowValue) {
+    digitalWrite(7, LOW);
+    backward(abs(sliderValue2), 6, 5);
+    delay(200);
+  }
+  else {
+    digitalWrite(7, HIGH);
+    motorstop(6, 5);
   }
 }
 
 int slider(int slider) {
- sli1 = analogRead(slider);
-  value1 = int(map(sli1, 0, 1024, -255, 255));
-
-  return value1 ;
+  int sli = analogRead(slider);
+  int value = int(map(sli, 0, 1024, 0, 255));
+  return value;
 }
 
-void motorstop(const int x,const int y)
+void motorstop(const int x, const int y)
 {
   digitalWrite(x, LOW);
   digitalWrite(y, LOW);
 }
 
-void forward(int gospeed,const int x,const int y)
+void forward(int gospeed, const int x, const int y)
 {
   digitalWrite(x, gospeed);
   digitalWrite(y, 0);
 }
 
-void backward(int backspeed,const int x,const int y)
+void backward(int backspeed, const int x, const int y)
 {
   digitalWrite(x, 0);
   digitalWrite(y, backspeed);
 }
-~
