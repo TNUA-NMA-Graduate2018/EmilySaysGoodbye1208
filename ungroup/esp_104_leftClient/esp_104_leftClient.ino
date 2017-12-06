@@ -1,7 +1,7 @@
 /*
- *  This sketch sends a message to a TCP server
- *
- */
+    This sketch sends a message to a TCP server
+
+*/
 
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
@@ -10,9 +10,9 @@ ESP8266WiFiMulti WiFiMulti;
 
 const int readSlider1 = A0;
 
-boolean modeChange = 0; //0 =selfs  1=other
-const int modeChanging = D3;
-const int Ot2 = D4;
+boolean modeChange = 1; //0 =selfs  1=other
+//const int modeChanging = D3;
+const int Ot2 = 4;
 const int Ot4 = D5;
 const int Ot7 = D6;
 const int Ot8 = D7;
@@ -20,12 +20,14 @@ const int Ot8 = D7;
 const int testHigh = 155;
 const int testLow = 130;
 
+int FromOther = 0;
+int ToOther = 0;
 void setup() {
   Serial.begin(115200);
   delay(10);
 
   pinMode(readSlider1, INPUT);
-  pinMode(modeChanging, INPUT);
+  //pinMode(modeChanging, INPUT);
 
 
   pinMode(Ot2, OUTPUT);
@@ -43,7 +45,7 @@ void setup() {
 
   while (WiFiMulti.run() != WL_CONNECTED) {
     Serial.print(".");
-    delay(500);
+    delay(50);
   }
 
   Serial.println("");
@@ -56,9 +58,7 @@ void setup() {
 
 
 void loop() {
-  int FromOther;
-  int ToOther;
-  modeChange = digitalRead(modeChanging);
+  //modeChange = digitalRead(modeChanging);
 
   if (!modeChange) {
     sliderControlSelf();
@@ -82,23 +82,21 @@ void internetCheck(int sendToOther) {
   if (!client.connect(host, port)) {
     Serial.println("connection failed");
     Serial.println("wait 5 sec...");
-    delay(5000);
+    delay(50);
     return;
   }
   String req = client.readStringUntil('\r');
   int val;
-  val = int(req[0]);
-  Serial.println(val);
-  digitalWrite(D7, val);
+  val = req.toInt();
+  FromOther = val;
+  Serial.println(FromOther);
+  //digitalWrite(D7, val);
   // This will send the request to the server
 
   client.print(sendToOther);
   client.flush();
 
-  delay(300);
-
   //client.stop();
-
 
 }
 
@@ -160,6 +158,6 @@ int slider(int slider) {
   int sli = analogRead(slider);
   int value = int(map(sli, 0, 1024, 0, 255));
   Serial.println(value);
+  delay(200);
   return value ;
 }
-
