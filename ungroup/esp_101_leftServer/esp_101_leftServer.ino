@@ -13,10 +13,10 @@ const char* ssid = "dlink-DC88";
 const char* password = "ydeok89348";
 
 WiFiServer server(80);
-boolean modeChange = 0; //0 =selfs  1=other
+boolean modeChange = 1; //0 =selfs  1=other
 const int modeChanging = D3;
 const int readSlider1 = A0;
-const int Ot2 = D4;
+const int Ot2 = 4;
 const int Ot4 = D5;
 const int Ot7 = D6;
 const int Ot8 = D7;
@@ -24,14 +24,14 @@ const int Ot8 = D7;
 int testHigh = 155;
 int testLow = 130;
 
+int FromOther = 0;
+int ToOther = 0;
+
 void setup() {
   Serial.begin(115200);
   delay(10);
-
-
   pinMode(readSlider1, INPUT);
   pinMode(modeChanging, INPUT);
-
   pinMode(Ot2, OUTPUT);
   pinMode(Ot4, OUTPUT);
   pinMode(Ot7, OUTPUT);
@@ -61,9 +61,7 @@ void setup() {
 }
 
 void loop() {
-  int FromOther;
-  int ToOther;
-  modeChange = digitalRead(modeChanging);
+  //modeChange = digitalRead(modeChanging);
 
   if (!modeChange) {
     sliderControlSelf();
@@ -81,7 +79,6 @@ void internetCheck(int sendToOther) {
   if (!client) {
     return;
   }
-
   // Wait until the client sends some data
   Serial.println("new client");
   while (!client.available()) {
@@ -90,24 +87,23 @@ void internetCheck(int sendToOther) {
 
   // Read the first line of the request
   String req = client.readStringUntil('\r');
-  //Serial.println(req);
-  client.flush();
-
-  // Match the request
   int val;
-
-  val = int(req[0]);
-  Serial.println(val);
+  val = req.toInt();
+  FromOther = val;
+  Serial.println(FromOther);
 
   // Set GPIO2 according to the request
-  digitalWrite(D7, val);
+  //digitalWrite(D7, val);
   //delay(val + 50);
 
   // Send the response to the client
-  client.print(sendToOther);
-  client.flush();
+  Serial.print ("SendToOther : ");
+  Serial.println(sendToOther);
+  
+  client.print(String(sendToOther)+"\r");
+//  client.flush();
 
-  delay(1);
+  delay(50);
   Serial.println("Client disonnected");
 
   // The client will actually be disconnected
@@ -172,6 +168,7 @@ int slider(int slider) {
   int sli = analogRead(slider);
   int value = int(map(sli, 0, 1024, 0, 255));
   Serial.println(value);
+  delay(100);
   return value ;
 }
 
