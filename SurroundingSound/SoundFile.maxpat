@@ -38,6 +38,19 @@
 		"subpatcher_template" : "",
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-113",
+					"maxclass" : "number",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "bang" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 1438.0, 110.076927, 50.0, 22.0 ],
+					"style" : ""
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-72",
 					"maxclass" : "message",
 					"numinlets" : 2,
@@ -471,7 +484,7 @@
 					"numoutlets" : 3,
 					"outlettype" : [ "", "", "" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1618.0, 208.0, 226.0, 226.0 ],
+					"patching_rect" : [ 1627.799927, 201.0, 226.0, 226.0 ],
 					"pointcolor" : [ 0.544021, 0.541173, 0.909022, 1.0 ],
 					"style" : "",
 					"varname" : "10",
@@ -684,14 +697,15 @@
 					"fontname" : "Arial",
 					"fontsize" : 12.0,
 					"id" : "obj-159",
+					"linecount" : 2,
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 1232.5, 310.0, 45.0, 20.0 ],
+					"patching_rect" : [ 1232.5, 310.0, 45.0, 33.0 ],
 					"presentation" : 1,
 					"presentation_rect" : [ 564.5, 642.0, 69.0, 20.0 ],
 					"style" : "",
-					"text" : "0.00 π",
+					"text" : "-1.19 π",
 					"textcolor" : [ 0.8, 0.8, 0.8, 1.0 ]
 				}
 
@@ -731,13 +745,14 @@
 					"fontname" : "Arial",
 					"fontsize" : 12.0,
 					"id" : "obj-164",
+					"linecount" : 2,
 					"maxclass" : "message",
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1340.399902, 281.0, 61.0, 22.0 ],
+					"patching_rect" : [ 1340.399902, 281.0, 61.0, 35.0 ],
 					"style" : "",
-					"text" : "0."
+					"text" : "-3.752458"
 				}
 
 			}
@@ -1030,7 +1045,7 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 62.0, 600.0, 150.0, 22.0 ],
 					"style" : "",
-					"text" : "zmap 0 2 50 255"
+					"text" : "zmap 0 2 50 240"
 				}
 
 			}
@@ -1043,7 +1058,7 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 222.0, 600.0, 176.0, 22.0 ],
 					"style" : "",
-					"text" : "zmap 0 2 50 255"
+					"text" : "zmap 0 2 50 240"
 				}
 
 			}
@@ -1980,14 +1995,14 @@
 					"fontname" : "Arial Bold",
 					"fontsize" : 10.0,
 					"id" : "obj-86",
-					"linecount" : 2,
+					"linecount" : 6,
 					"maxclass" : "message",
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 612.0, 321.0, 25.0, 31.0 ],
+					"patching_rect" : [ 612.0, 321.0, 25.0, 76.0 ],
 					"style" : "",
-					"text" : "0.5 0.5"
+					"text" : "0.342697 0.680956"
 				}
 
 			}
@@ -18818,7 +18833,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "signal", "float" ],
 					"patching_rect" : [ 209.0, 441.0, 48.0, 20.0 ],
-					"sig" : 0.806451,
+					"sig" : 0.772904,
 					"style" : ""
 				}
 
@@ -18835,7 +18850,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "signal", "float" ],
 					"patching_rect" : [ 153.0, 441.0, 48.0, 20.0 ],
-					"sig" : 0.806451,
+					"sig" : 0.605066,
 					"style" : ""
 				}
 
@@ -33707,7 +33722,7 @@
 					"mousemode" : 2,
 					"nodecolor" : [ 0.301961, 0.337255, 0.403922, 0.25098 ],
 					"nodenumber" : 12,
-					"nsize" : [ 0.62, 0.62, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25 ],
+					"nsize" : [ 0.67, 0.67, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25 ],
 					"numinlets" : 1,
 					"numoutlets" : 3,
 					"outlettype" : [ "", "", "" ],
@@ -33719,7 +33734,7 @@
 					"style" : "",
 					"textcolor" : [ 0.101961, 0.121569, 0.172549, 1.0 ],
 					"varname" : "NodesDrawer",
-					"xplace" : [ 0.38, 0.62, 0.676777, 0.323223, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5 ],
+					"xplace" : [ 0.39, 0.61, 0.676777, 0.323223, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5 ],
 					"yplace" : [ 0.5, 0.5, 0.676777, 0.676777, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5 ]
 				}
 
@@ -34083,7 +34098,7 @@
 					"destination" : [ "obj-169", 0 ],
 					"disabled" : 0,
 					"hidden" : 0,
-					"midpoints" : [ 1834.5, 435.0, 1629.900024, 435.0 ],
+					"midpoints" : [ 1844.299927, 435.0, 1629.900024, 435.0 ],
 					"source" : [ "obj-1", 2 ]
 				}
 
@@ -34221,6 +34236,15 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-282", 0 ],
+					"disabled" : 0,
+					"hidden" : 0,
+					"source" : [ "obj-113", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-135", 3 ],
 					"disabled" : 0,
 					"hidden" : 0,
@@ -34264,7 +34288,7 @@
 					"destination" : [ "obj-1", 0 ],
 					"disabled" : 0,
 					"hidden" : 0,
-					"midpoints" : [ 1632.5, 195.0, 1627.5, 195.0 ],
+					"midpoints" : [ 1632.5, 195.0, 1637.299927, 195.0 ],
 					"source" : [ "obj-121", 0 ]
 				}
 
@@ -34374,7 +34398,7 @@
 					"destination" : [ "obj-1", 0 ],
 					"disabled" : 0,
 					"hidden" : 0,
-					"midpoints" : [ 1805.5, 201.0, 1627.5, 201.0 ],
+					"midpoints" : [ 1805.5, 201.0, 1637.299927, 201.0 ],
 					"source" : [ "obj-136", 0 ]
 				}
 
@@ -34844,7 +34868,7 @@
 					"destination" : [ "obj-1", 0 ],
 					"disabled" : 0,
 					"hidden" : 0,
-					"midpoints" : [ 1632.5, 144.0, 1620.0, 144.0, 1620.0, 195.0, 1627.5, 195.0 ],
+					"midpoints" : [ 1632.5, 144.0, 1620.0, 144.0, 1620.0, 195.0, 1637.299927, 195.0 ],
 					"source" : [ "obj-181", 0 ]
 				}
 
@@ -35803,6 +35827,15 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-113", 0 ],
+					"disabled" : 0,
+					"hidden" : 0,
+					"source" : [ "obj-6", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-220", 0 ],
 					"disabled" : 0,
 					"hidden" : 0,
@@ -36064,14 +36097,14 @@
  ],
 		"parameters" : 		{
 			"obj-115" : [ "Lecture", "Lecture", 0 ],
-			"obj-76" : [ "X", "X", 0 ],
 			"obj-11" : [ "Nodes", "Nodes", 0 ],
+			"obj-76" : [ "X", "X", 0 ],
 			"obj-27" : [ "Distance", "Distance", 1 ],
 			"obj-26" : [ "Azimuth", "Azimuth", 1 ],
 			"obj-13" : [ "Edit", "Edit", 0 ],
-			"obj-140" : [ "Edit[1]", "Edit", 0 ],
 			"obj-39" : [ "ShiftX", "ShiftX", 0 ],
 			"obj-81" : [ "Y", "Y", 0 ],
+			"obj-140" : [ "Edit[1]", "Edit", 0 ],
 			"obj-303" : [ "Rotate", "Rotate", 0 ],
 			"obj-132" : [ "Rotation speed", "Speed", 0 ],
 			"obj-309" : [ "Shake", "Shake", 0 ],
