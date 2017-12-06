@@ -108,8 +108,9 @@ int detectDegree(){
 //  Serial.print(":");
 //  Serial.print(fixedHeadingDegrees);
 //  Serial.print(":");
-  Serial.print(smoothHeadingDegrees); 
-  return smoothHeadingDegrees; 
+  char writeDegrees = char(map(smoothHeadingDegrees,0,360,0,255));
+  Serial.write(writeDegrees); 
+//return smoothHeadingDegrees; 
   
 //  return smoothHeadingDegree;
   // One loop: ~5ms @ 115200 serial.
