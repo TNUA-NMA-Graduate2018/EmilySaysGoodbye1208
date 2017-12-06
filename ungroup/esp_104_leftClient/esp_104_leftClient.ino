@@ -72,7 +72,7 @@ void loop() {
 void internetCheck(int sendToOther) {
   const uint16_t port = 80;
   const char * host = "192.168.0.101"; // ip or dns
-
+ 
   Serial.print("connecting to ");
   Serial.println(host);
   Serial.println("IP address: ");
@@ -85,16 +85,22 @@ void internetCheck(int sendToOther) {
     delay(50);
     return;
   }
-  String req = client.readStringUntil('\r');
+
+  client.print(sendToOther);
+  String req;
+  while(client.available()==0){
+    //Serial.println("Wait");
+  }
+    
+  req = client.readStringUntil('\r');
   int val;
   val = req.toInt();
   FromOther = val;
-  Serial.println(FromOther);
+  Serial.println(req);
   //digitalWrite(D7, val);
   // This will send the request to the server
 
-  client.print(sendToOther);
-  client.flush();
+  //client.flush();
 
   //client.stop();
 
@@ -158,6 +164,6 @@ int slider(int slider) {
   int sli = analogRead(slider);
   int value = int(map(sli, 0, 1024, 0, 255));
   Serial.println(value);
-  delay(200);
+  delay(100);
   return value ;
 }
