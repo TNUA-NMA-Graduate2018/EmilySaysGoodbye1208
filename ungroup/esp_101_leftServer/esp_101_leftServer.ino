@@ -104,7 +104,7 @@ void internetCheck(int sendToOther) {
 //  client.flush();
 
   delay(50);
-  Serial.println("Client disonnected");
+  
 
   // The client will actually be disconnected
   // when the function returns and 'client' object is detroyed
