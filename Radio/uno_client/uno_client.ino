@@ -1,3 +1,9 @@
+#include <SPI.h>
+#include "RF24.h"
+RF24 rf24(7, 8); // CE腳, CSN腳
+const byte addr[] = "1Node";
+byte pipe = 1;  // 指定通道編號
+
 boolean modeChange = 1; //0 =selfs  1=other
 
 const int modeChanging = 3;
@@ -37,23 +43,47 @@ void setup() {
   pinMode(resR, INPUT);
   pinMode(resL, INPUT);
   pinMode(modeChanging, INPUT);
+  rf24.begin();
+  rf24.setChannel(83);  // 設定頻道編號
+  rf24.setPALevel(RF24_PA_MIN);
+  rf24.setDataRate(RF24_250KBPS);
+  rf24.openReadingPipe(pipe, addr);  // 開啟通道和位址
+  rf24.startListening();  // 開始監聽無線廣播
+  Serial.println("nRF24L01 ready!");
 }
 
 void loop() {
-  modeChange = digitalRead(modeChanging);
-
+  //modeChange = digitalRead(modeChanging);
   if (!modeChange) {
     sliderControlSelf(resR, resL);
   }
   else {
+    ConnectCheck();
     sliderControlByOther(FromOtherR, FromOtherL);
   }
-  ConnectCheck();
+
 }
-
-
 void ConnectCheck() {
-  return;
+  if (rf24.available(&pipe)) {
+    char mg[16] = "";
+    rf24.read(&mg, sizeof(mg));
+
+    FromOtherL = 0;
+    FromOtherR = 0;
+    int now = 0;
+    int s = 0;
+    do {
+      if (mg[s] == ' ')now = 1;
+      else if (now == 0 && mg[s] >= '0' &&  mg[s] <= '9') {
+        FromOtherL *= 10;
+        FromOtherL += mg[s] - '0';
+      } else if (now == 1 && mg[s] >= '0' &&  mg[s] <= '9') {
+        FromOtherR *= 10;
+        FromOtherR += mg[s] - '0';
+      }
+      s++;
+    } while (mg[s] != ';');
+  }
 }
 
 
@@ -97,8 +127,8 @@ void Rgoback(int valuein) {
 }
 
 void Rnomove(int valuein) {
-  if (valuein < testHigh && valuein > testLow){
-  digitalWrite(RelayR1, HIGH);
+  if (valuein < testHigh && valuein > testLow) {
+    digitalWrite(RelayR1, HIGH);
     digitalWrite(RelayR2, HIGH);
     digitalWrite(RelayR3, HIGH);
     digitalWrite(RelayR4, HIGH);
