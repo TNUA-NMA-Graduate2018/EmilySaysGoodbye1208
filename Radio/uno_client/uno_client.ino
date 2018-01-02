@@ -7,16 +7,16 @@ byte pipe = 1;  // 指定通道編號
 boolean modeChange = 1; //0 =selfs  1=other
 
 const int modeChanging = 3;
+//Radio Used 7,8,11,12,13
+const int RelayR1 = 1;//4
+const int RelayR2 = 2;//5
+const int RelayR3 = 3;//6
+const int RelayR4 = 4;//7
 
-const int RelayR1 = 4;
-const int RelayR2 = 5;
-const int RelayR3 = 6;
-const int RelayR4 = 7;
-
-const int RelayL1 = 8;
-const int RelayL2 = 9;
-const int RelayL3 = 10;
-const int RelayL4 = 11;
+const int RelayL1 = 5;//8
+const int RelayL2 = 6;//9
+const int RelayL3 = 9;//10
+const int RelayL4 = 10;//11
 
 const int resR = A0;
 const int resL = A1;
